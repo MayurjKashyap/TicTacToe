@@ -14,16 +14,34 @@ typedef struct cell{
     cellValue value;
 } cell;
 
+namespace board {
+    typedef enum result{
+        PLAYER1,
+        PLAYER2,
+        DRAW,
+        ONGOING
+    } result;
+}
+
+
 class Board {
 public:
     Board();
     void draw(int xpos,int ypos);
     void update();
-    void check();
     void setCellDimensions();
+    void setCell(int xcoordinate,int ycoordinate,cellValue value);
+    void reset();
+    int getCellWidth();
+    int getCellHeight();
+    bool isValidIndex(int x,int y);
+    bool isEmpty(int x,int y);
+    board::result getResult();
 
 private:
     cell board[N][N];
     int cellWidth;
     int cellHeight;
+    int emptyCellCount;
+    board::result result;
 };
