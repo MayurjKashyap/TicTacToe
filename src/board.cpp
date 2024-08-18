@@ -22,7 +22,16 @@ void Board::reset(){
             board[i][j].value=EMPTY;
 }
 
-void Board::draw(int xpos,int ypos){
+void Board::drawBoard(){
+    ClearBackground(RAYWHITE);
+        for(int i=0;i<N;i++) {
+            for(int j=0;j<N;j++) {
+                drawCell(i,j);
+            }
+        }
+}
+
+void Board::drawCell(int xpos,int ypos){
     if(board[xpos][ypos].value==CROSS)
         DrawRectangle(xpos * cellWidth, ypos * cellHeight, cellWidth, cellHeight, RED);
     else if(board[xpos][ypos].value==NOUGHT)

@@ -27,7 +27,8 @@ namespace board {
 class Board {
 public:
     Board();
-    void draw(int xpos,int ypos);
+    void drawBoard();
+    void drawCell(int xpos,int ypos);
     void update();
     void setCellDimensions();
     void setCell(int xcoordinate,int ycoordinate,cellValue value);

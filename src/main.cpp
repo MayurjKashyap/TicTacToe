@@ -1,30 +1,32 @@
-#include <raylib.h>
 #include <string>
-#include<iostream>
-
+#include <iostream>
 #include "game.h"
+#include "helper.h"
+#include <thread>
+#include <chrono>
 
 int main()
 {
-    int i=0;
-    std::cin>>i;
+    // int i=0;
+    // std::cin>>i;
 
     const int screenWidth = 800;
     const int screenHeight = 600;
 
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    InitWindow(screenWidth, screenHeight, "Tic Tac Toe");
-    SetWindowMinSize(450,450);
+    init(screenWidth,screenHeight);
     Game Game;
-    if(i) Game.setNetwork(true);
-    else Game.setNetwork(false);
-    SetTargetFPS(60);
+    // if(i) 
+    // Game.setNetwork(true);
+    // else 
+    Game.setNetwork(false);
 
-    while (!WindowShouldClose())
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+
+    while (windowcondition())
     {
         Game.updateFrame();
     }
 
-    CloseWindow();
+    close();
     return 0;
 }

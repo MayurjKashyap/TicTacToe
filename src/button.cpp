@@ -2,7 +2,15 @@
 #include "button.h"
 #include <string>
 
-TextBox::TextBox(std::string str,int fontsize,int x,int y,Color c){
+Color convert(Colour c){
+    return Color{c.r,c.g,c.b,c.a};
+}
+
+Rectangle convert(Rect r){
+    return Rectangle{r.x,r.y,r.width,r.height};
+}
+
+TextBox::TextBox(std::string str,int fontsize,int x,int y,Colour c){
     text=str;
     xpercent=x;
     ypercent=y;
@@ -16,7 +24,7 @@ void TextBox::setString(std::string str){
 }
 
 void TextBox::draw(){
-    DrawRectangle(rect.x,rect.y,rect.width,rect.height,color);
+    DrawRectangle(rect.x,rect.y,rect.width,rect.height,convert(color));
     DrawText(text.basic_string::c_str(),offset,rect.y+((float)rect.height*0.25),fontSize,BLACK);
 }
 
@@ -24,7 +32,7 @@ void TextBox::setDimensions(){
     int w=GetScreenWidth();
     int h=GetScreenHeight();
     
-    Rectangle r;
+    Rect r;
         r.x=(w*xpercent)/100;
         r.y=(h*ypercent)/100;
         r.width=(w*(100-2*xpercent))/100;
@@ -44,13 +52,13 @@ void TextBox::setDimensions(){
 
 bool Button::isClicked(){
     Vector2 mousePos = GetMousePosition();
-    if (CheckCollisionPointRec(mousePos, rect)) {
+    if (CheckCollisionPointRec(mousePos, convert(rect))) {
             if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) return true;
         }
     return false;
 }
 
-Button::Button(std::string str,int fontsize,int x,int y,int yb,Color c)
+Button::Button(std::string str,int fontsize,int x,int y,int yb,Colour c)
     : TextBox(str,fontSize,x,y,c) {
         ybottom=yb;
         setButtonDimensions();

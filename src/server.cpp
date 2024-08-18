@@ -2,7 +2,9 @@
 #include "network.h"
 #include <iostream>
 #include <string>
-#pragma comment(lib, "ws2_32.lib") // Winsock Library
+// #pragma comment(lib, "ws2_32.lib") // Winsock Library
+
+char buffer[BUFFER_SIZE];
 
 int Server::init(){
     // Initialize Winsock
@@ -10,11 +12,13 @@ int Server::init(){
         std::cerr << "Failed. Error Code: " << WSAGetLastError() << std::endl;
         return 1;
     }
+    std::cout<<"WSA Created"<<std::endl;
     // Create a socket
     if ((serverSocket = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
         std::cerr << "Could not create socket. Error Code: " << WSAGetLastError() << std::endl;
         return 1;
     }
+    std::cout<<"Socket Created"<<std::endl;
     // Prepare the sockaddr_in structure
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;
@@ -26,6 +30,7 @@ int Server::init(){
         WSACleanup();
         return 1;
     }
+    std::cout<<"Server Created"<<std::endl;
     return 0;
 }
 
@@ -60,6 +65,7 @@ int Server::connectClient(){
         WSACleanup();
         return 1;
     }
+    std::cout<<"Client Connected"<<std::endl;
     return 0;
 }
 

@@ -24,7 +24,7 @@
 .PHONY: all clean
 
 # Define required raylib variables
-PROJECT_NAME       ?= main
+PROJECT_NAME       ?= b
 RAYLIB_VERSION     ?= 5.0.0
 RAYLIB_PATH        ?= C:/raylib/raylib
 COMPILER_PATH      ?= C:/raylib/w64devkit/bin

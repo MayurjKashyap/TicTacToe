@@ -1,11 +1,15 @@
 #include <string>
 #include <memory>
-#include "raylib.h"
 #include "game.h"
 #include "button.h"
 #include "network.h"
+#include "helper.h"
 
 int abc;
+
+#define LIGHTGRAY Colour{200,200,200,255}
+#define GREEN Colour{0,228,48,255}
+#define RAYWHITE Colour{245,245,245,255}
 
 Game::Game(): 
             board(),
@@ -25,20 +29,16 @@ void Game::updateFrame(){
 
 void Game::drawFrame(){
     board.setCellDimensions();
-    BeginDrawing();
+    startDrawing();
     
-        ClearBackground(RAYWHITE);
-        for(int i=0;i<N;i++) {
-            for(int j=0;j<N;j++) {
-                board.draw(i,j);
-            }
-        }
+    board.drawBoard();
 
     if(gameState==END) {
         banner.draw();
         restart.draw();
     }
-    EndDrawing();
+
+    endDrawing();
 }
 
 void Game::updateGameState(){
@@ -84,11 +84,10 @@ void Game::handleBoardClick(){
         }
     }
     else {
-        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
+        if (isMouseClicked())
 	    {
-	    	Vector2 mPos = GetMousePosition();
-	    	int xIndex = mPos.x / board.getCellWidth();
-	    	int yIndex = mPos.y / board.getCellHeight();
+	    	int xIndex = getMouseX(board);
+	    	int yIndex = getMouseY(board);
 
 	    	if(board.isValidIndex(xIndex,yIndex) && gameState!=END && board.isEmpty(xIndex,yIndex)){
                 cellValue value = (gameState==PLAYER1)? CROSS : NOUGHT;
@@ -97,7 +96,7 @@ void Game::handleBoardClick(){
                 strcpy(buffer,str.basic_string::c_str());
                 abc = network->sendData();
                 gameState = (gameState==PLAYER1)? PLAYER2 : PLAYER1;
-                turn=false;
+                // turn=false;
             }
 	    }
     }
@@ -118,7 +117,7 @@ void Game::handleRestartClick(){
 }
 
 void Game::reset(){
-    // gameState=PLAYER1;
+    gameState=PLAYER1;
     ZeroMemory(buffer,BUFFER_SIZE);
     board.reset();
 }
