@@ -4,7 +4,8 @@
 #include <string>
 // #pragma comment(lib, "ws2_32.lib") // Winsock Library
 
-char buffer[BUFFER_SIZE];
+char Rbuffer[BUFFER_SIZE];
+char Sbuffer[BUFFER_SIZE];
 
 int Server::init(){
     // Initialize Winsock
@@ -77,17 +78,18 @@ int Server::initialization(){
 }
 
 int Server::sendData(){
-    int recv_size = recv(clientSocket, buffer, BUFFER_SIZE, 0);
+    int recv_size = send(clientSocket, Sbuffer, BUFFER_SIZE, 0);
     if (recv_size == SOCKET_ERROR) {
             std::cerr << "recv failed. Error Code: " << WSAGetLastError() << std::endl;
             return 1;
     }
+    ZeroMemory(Sbuffer, BUFFER_SIZE);
     return 0;
 }
 
 int Server::receiveData() {
-    ZeroMemory(buffer, BUFFER_SIZE);
-    int recv_size = recv(clientSocket, buffer, BUFFER_SIZE, 0);
+    ZeroMemory(Rbuffer, BUFFER_SIZE);
+    int recv_size = recv(clientSocket, Rbuffer, BUFFER_SIZE, 0);
     if (recv_size == SOCKET_ERROR) {
             std::cerr << "recv failed. Error Code: " << WSAGetLastError() << std::endl;
             return 1;

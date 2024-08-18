@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <thread>
 #include "board.h"
 #include "button.h"
 #include "network.h"
@@ -24,6 +25,8 @@ public:
     void setGameState(gameState s);
     void setServer(bool flag);
     void setNetwork(bool f);
+    void receiveDataLoop();
+    void sendData();
 
 private:
     Board board;
@@ -32,5 +35,8 @@ private:
     Button restart;
     bool isServer;
     bool turn;
+    bool threadFlag;
     std::unique_ptr<Network> network;
+    std::thread receiveThread;
+    std::thread tempThread;
 };

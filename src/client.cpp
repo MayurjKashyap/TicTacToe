@@ -41,22 +41,21 @@ int Client::initialization(){
 }
 
 int Client::sendData(){
-    if (send(clientSocket, buffer, BUFFER_SIZE, 0) < 0) {
+    if (send(clientSocket, Sbuffer, BUFFER_SIZE, 0) < 0) {
         std::cerr << "Send failed. Error Code: " << WSAGetLastError() << std::endl;
         return 1;
     }
-    ZeroMemory(buffer, BUFFER_SIZE);
+    ZeroMemory(Sbuffer, BUFFER_SIZE);
     return 0;
 }
 
 int Client::receiveData() {
-    ZeroMemory(buffer, BUFFER_SIZE);
-    int recv_size = recv(clientSocket, buffer, BUFFER_SIZE, 0);
+    ZeroMemory(Rbuffer, BUFFER_SIZE);
+    int recv_size = recv(clientSocket, Rbuffer, BUFFER_SIZE, 0);
     if (recv_size == SOCKET_ERROR) {
             std::cerr << "recv failed. Error Code: " << WSAGetLastError() << std::endl;
             return 1;
     }
-    std::cout<<buffer<<std::endl;
     return 0;
 }
 

@@ -3,7 +3,8 @@
 #include <string>
 
 #define BUFFER_SIZE 10
-extern char buffer[];
+extern char Rbuffer[];
+extern char Sbuffer[];
 
 class Network{
 public:

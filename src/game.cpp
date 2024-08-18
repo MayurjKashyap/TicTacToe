@@ -1,5 +1,6 @@
 #include <string>
 #include <memory>
+#include <thread>
 #include "game.h"
 #include "button.h"
 #include "network.h"
@@ -17,6 +18,7 @@ Game::Game():
             restart("RESTART",36,40,50,40,GREEN) {
     setGameState(PLAYER1);
     setServer(false);
+    threadFlag=true;
 }
 
 void Game::updateFrame(){
@@ -72,53 +74,37 @@ void Game::handleClick(){
 }
 
 void Game::handleBoardClick(){
-    if(turn==false) {
-        abc = network->receiveData();
-        if(buffer[0]=='M'&&buffer[1]=='V'){
-            int xIndex=buffer[2]-'0';
-            int yIndex=buffer[3]-'0';
+    if (isMouseClicked()&&turn)
+	{
+		int xIndex = getMouseX(board);
+		int yIndex = getMouseY(board);
+		if(board.isValidIndex(xIndex,yIndex) && gameState!=END && board.isEmpty(xIndex,yIndex)){
             cellValue value = (gameState==PLAYER1)? CROSS : NOUGHT;
             board.setCell(xIndex,yIndex,value);
+            std::string str="MV"+std::to_string(xIndex)+std::to_string(yIndex);
+            strcpy(Sbuffer,str.basic_string::c_str());
+            
+            tempThread = std::thread(&Game::sendData, this);
+            tempThread.detach();
+            
             gameState = (gameState==PLAYER1)? PLAYER2 : PLAYER1;
-            turn=true;
+            turn=false;
         }
-    }
-    else {
-        if (isMouseClicked())
-	    {
-	    	int xIndex = getMouseX(board);
-	    	int yIndex = getMouseY(board);
-
-	    	if(board.isValidIndex(xIndex,yIndex) && gameState!=END && board.isEmpty(xIndex,yIndex)){
-                cellValue value = (gameState==PLAYER1)? CROSS : NOUGHT;
-                board.setCell(xIndex,yIndex,value);
-                std::string str="MV"+std::to_string(xIndex)+std::to_string(yIndex);
-                strcpy(buffer,str.basic_string::c_str());
-                abc = network->sendData();
-                gameState = (gameState==PLAYER1)? PLAYER2 : PLAYER1;
-                // turn=false;
-            }
-	    }
-    }
+	}
 }
 
 void Game::handleRestartClick(){
     if(isServer && restart.isClicked()){
-        strcpy(buffer,"RESTART");
-        abc =network->sendData();
+        strcpy(Sbuffer,"RESTART");
+        tempThread = std::thread(&Game::sendData, this);
+        tempThread.detach();
         reset();
-    }
-    else {
-        abc =network->receiveData();
-        if(strcmp(buffer,"RESTART")){
-            reset();
-        }
     }
 }
 
 void Game::reset(){
     gameState=PLAYER1;
-    ZeroMemory(buffer,BUFFER_SIZE);
+    turn=isServer;
     board.reset();
 }
 
@@ -149,4 +135,26 @@ void Game::setNetwork(bool f){
     }
     network->IPaddress="127.0.0.1";
     abc = network->initialization();
+    receiveThread = std::thread(&Game::receiveDataLoop, this);
+    receiveThread.detach();
+}
+
+void Game::receiveDataLoop() {
+    while (threadFlag) {
+        abc = network->receiveData();
+        if (!turn && Rbuffer[0] == 'M' && Rbuffer[1] == 'V') {
+            int xIndex = Rbuffer[2] - '0';
+            int yIndex = Rbuffer[3] - '0';
+            cellValue value = (gameState == PLAYER1) ? CROSS : NOUGHT;
+            board.setCell(xIndex, yIndex, value);
+            gameState = (gameState == PLAYER1) ? PLAYER2 : PLAYER1;
+            turn = true;
+        } else if (strcmp(Rbuffer, "RESTART") == 0) {
+            reset();
+        }
+    }
+}
+
+void Game::sendData(){
+    abc = network->sendData();
 }
