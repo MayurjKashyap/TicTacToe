@@ -27,6 +27,7 @@ namespace board {
 class Board {
 public:
     Board();
+    ~Board();
     void drawBoard();
     void drawCell(int xpos,int ypos);
     void update();

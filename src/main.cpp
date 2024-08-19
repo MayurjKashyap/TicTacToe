@@ -21,6 +21,7 @@ int main()
     else Game.setNetwork(false);
     std::cout<<std::endl;
 
+
     while (windowcondition())
     {
         if(quitGame) break;

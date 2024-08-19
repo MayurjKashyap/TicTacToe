@@ -2,6 +2,8 @@
 #include "board.h"
 using namespace board;
 
+Texture2D signs;
+
 Board::Board(){
     for(int i=0;i<N;i++){
         for(int j=0;j<N;j++){
@@ -12,6 +14,11 @@ Board::Board(){
     }
     emptyCellCount=9;
     result=ONGOING;
+    signs = LoadTexture("src/tictactoe.png");
+}
+
+Board::~Board(){
+    UnloadTexture(signs);
 }
 
 void Board::reset(){
@@ -32,10 +39,14 @@ void Board::drawBoard(){
 }
 
 void Board::drawCell(int xpos,int ypos){
-    if(board[xpos][ypos].value==CROSS)
-        DrawRectangle(xpos * cellWidth, ypos * cellHeight, cellWidth, cellHeight, RED);
-    else if(board[xpos][ypos].value==NOUGHT)
-        DrawRectangle(xpos * cellWidth, ypos * cellHeight, cellWidth, cellHeight, GREEN);
+    Rectangle dest = {(float)(xpos * cellWidth), (float)(ypos * cellHeight), (float)cellWidth, (float)cellHeight};
+    if(board[xpos][ypos].value==CROSS){
+        Rectangle source = (Rectangle){0, 0, 100, 100};
+		DrawTexturePro(signs, source, dest, (Vector2){0, 0}, 0, RED);
+    }else if(board[xpos][ypos].value==NOUGHT){
+        Rectangle source = (Rectangle){100, 0, 100, 100};
+		DrawTexturePro(signs, source, dest, (Vector2){0, 0}, 0, RED);
+    }
     DrawRectangleLines(xpos * cellWidth, ypos * cellHeight, cellWidth, cellHeight, BLACK);
 }
 
