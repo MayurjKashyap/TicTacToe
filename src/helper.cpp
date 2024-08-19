@@ -6,7 +6,7 @@ void init(int w,int h){
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(w, h, "Tic Tac Toe");
     SetWindowMinSize(450,450);
-    // SetTargetFPS(60);
+    SetTargetFPS(60);
 }
 
 bool windowcondition(){

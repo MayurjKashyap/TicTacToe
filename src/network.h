@@ -1,6 +1,6 @@
 #pragma once
-#include <winsock2.h>
 #include <string>
+#include <winsock2.h>
 
 #define BUFFER_SIZE 10
 extern char Rbuffer[];
@@ -12,6 +12,7 @@ public:
     virtual int sendData() = 0;
     virtual int receiveData() = 0;
     virtual int initialization() = 0;
+    virtual int connectNetwork() = 0;
     virtual int close() = 0;
     std::string IPaddress;
 };
@@ -22,6 +23,7 @@ public:
     int init();
     int connectToServer(std::string s);
     int initialization() override;
+    int connectNetwork() override;
     int sendData() override;
     int receiveData() override;
     int close() override;
@@ -39,6 +41,7 @@ public:
     std::string getIP();
     int connectClient();
     int initialization() override;
+    int connectNetwork() override;
     int sendData() override;
     int receiveData() override;
     int close() override;

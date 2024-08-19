@@ -1,8 +1,8 @@
-#include <winsock2.h>
-#include "network.h"
 #include <iostream>
 #include <string>
-// #pragma comment(lib, "ws2_32.lib") // Winsock Library
+#include <winsock2.h>
+
+#include "network.h"
 
 int Client::init(){
     // Initialize Winsock
@@ -20,9 +20,9 @@ int Client::init(){
     return 0;
 }
 
-int Client::connectToServer(std::string s){
+int Client::connectNetwork(){
     // Specify server address
-    server.sin_addr.s_addr = inet_addr(s.basic_string::c_str());
+    server.sin_addr.s_addr = inet_addr(IPaddress.basic_string::c_str());
     server.sin_family = AF_INET;
     server.sin_port = htons(8888);
     // Connect to the server
@@ -36,7 +36,6 @@ int Client::connectToServer(std::string s){
 
 int Client::initialization(){
     init();
-    connectToServer(IPaddress);
     return 0;
 }
 

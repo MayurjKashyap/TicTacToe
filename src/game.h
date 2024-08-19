@@ -1,9 +1,12 @@
 #pragma once
 #include <memory>
 #include <thread>
+
 #include "board.h"
 #include "button.h"
 #include "network.h"
+
+extern bool quitGame;
 
 typedef enum gameState{
     END,
@@ -20,7 +23,7 @@ public:
     void setDimensions();
     void handleClick();
     void handleBoardClick();
-    void handleRestartClick();
+    void handleEndClick();
     void reset();
     void setGameState(gameState s);
     void setServer(bool flag);
@@ -33,6 +36,7 @@ private:
     gameState gameState;
     TextBox banner;
     Button restart;
+    Button quit;
     bool isServer;
     bool turn;
     bool threadFlag;

@@ -1,8 +1,8 @@
-#include <winsock2.h>
-#include "network.h"
 #include <iostream>
 #include <string>
-// #pragma comment(lib, "ws2_32.lib") // Winsock Library
+#include <winsock2.h>
+
+#include "network.h"
 
 char Rbuffer[BUFFER_SIZE];
 char Sbuffer[BUFFER_SIZE];
@@ -55,7 +55,7 @@ std::string Server::getIP(){
     return ipAddr!=NULL? std::string(ipAddr): "";
 }
 
-int Server::connectClient(){
+int Server::connectNetwork(){
     // Listen for incoming connections
     listen(serverSocket, 1);
     int c = sizeof(struct sockaddr_in);
@@ -73,7 +73,6 @@ int Server::connectClient(){
 int Server::initialization(){
     init();
     IPaddress=getIP();
-    connectClient();
     return 0;
 }
 

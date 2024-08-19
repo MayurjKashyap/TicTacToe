@@ -1,6 +1,8 @@
+#include <string>
+
 #include "raylib.h"
 #include "button.h"
-#include <string>
+#include "helper.h"
 
 Color convert(Colour c){
     return Color{c.r,c.g,c.b,c.a};

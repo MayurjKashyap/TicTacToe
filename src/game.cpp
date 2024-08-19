@@ -1,31 +1,36 @@
 #include <string>
 #include <memory>
 #include <thread>
+
 #include "game.h"
 #include "button.h"
 #include "network.h"
 #include "helper.h"
 
-int abc;
-
 #define LIGHTGRAY Colour{200,200,200,255}
 #define GREEN Colour{0,228,48,255}
+#define RED Colour{230, 41, 55, 255}
 #define RAYWHITE Colour{245,245,245,255}
 
 Game::Game(): 
             board(),
             banner("",36,10,20,LIGHTGRAY),
-            restart("RESTART",36,40,50,40,GREEN) {
+            restart("RESTART",36,40,40,50,GREEN),
+            quit("QUIT",36,40,50,40,RED) {
     setGameState(PLAYER1);
     setServer(false);
     threadFlag=true;
 }
 
 void Game::updateFrame(){
-    setDimensions();
     handleClick();
-    board.update();
-    updateGameState();
+    if(gameState!=END){
+        board.update();
+        updateGameState();
+    }
+    if(gameState==END){
+        setDimensions();
+    }
     drawFrame();
 }
 
@@ -34,10 +39,10 @@ void Game::drawFrame(){
     startDrawing();
     
     board.drawBoard();
-
     if(gameState==END) {
         banner.draw();
         restart.draw();
+        quit.draw();
     }
 
     endDrawing();
@@ -66,8 +71,9 @@ void Game::updateGameState(){
 }
 
 void Game::handleClick(){
+    board.setCellDimensions();
     if(gameState==END){
-        handleRestartClick();
+        handleEndClick();
     } else {
         handleBoardClick();
     }
@@ -93,12 +99,18 @@ void Game::handleBoardClick(){
 	}
 }
 
-void Game::handleRestartClick(){
+void Game::handleEndClick(){
     if(isServer && restart.isClicked()){
         strcpy(Sbuffer,"RESTART");
         tempThread = std::thread(&Game::sendData, this);
         tempThread.detach();
         reset();
+    }
+    else if (quit.isClicked()){
+        strcpy(Sbuffer,"QUIT");
+        tempThread = std::thread(&Game::sendData, this);
+        tempThread.detach();
+        quitGame=true;
     }
 }
 
@@ -113,17 +125,19 @@ void Game::setGameState(enum gameState s){
 }
 
 void Game::setDimensions(){
-    board.setCellDimensions();
-    banner.setDimensions();
-    restart.setButtonDimensions();
+    if(gameState==END){
+        banner.setDimensions();
+        restart.setButtonDimensions();
+        quit.setButtonDimensions();
+    }
 }
 
 void Game::setServer(bool flag){
     isServer=flag;
 }
 
-void Game::setNetwork(bool f){
-    if(f){
+void Game::setNetwork(bool flag){
+    if(flag){
         setServer(true);
         turn=true;
         network = std::make_unique<Server>();
@@ -133,15 +147,16 @@ void Game::setNetwork(bool f){
         turn=false;
         network = std::make_unique<Client>();
     }
-    network->IPaddress="127.0.0.1";
-    abc = network->initialization();
+    network->initialization();
+    if(!flag) network->IPaddress="127.0.0.1";
+    network->connectNetwork();
     receiveThread = std::thread(&Game::receiveDataLoop, this);
     receiveThread.detach();
 }
 
 void Game::receiveDataLoop() {
     while (threadFlag) {
-        abc = network->receiveData();
+        if(network->receiveData()) break;
         if (!turn && Rbuffer[0] == 'M' && Rbuffer[1] == 'V') {
             int xIndex = Rbuffer[2] - '0';
             int yIndex = Rbuffer[3] - '0';
@@ -151,10 +166,14 @@ void Game::receiveDataLoop() {
             turn = true;
         } else if (strcmp(Rbuffer, "RESTART") == 0) {
             reset();
+        } else if (strcmp(Rbuffer, "QUIT") == 0) {
+            network->close();
+            threadFlag=false;
+            quitGame=true;
         }
     }
 }
 
 void Game::sendData(){
-    abc = network->sendData();
+    network->sendData();
 }
